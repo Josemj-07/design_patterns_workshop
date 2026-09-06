@@ -44,7 +44,7 @@ public class Main {
         if (carpetaDatosDesde03Src.toFile().exists()) {
             return carpetaDatosDesde03Src.toAbsolutePath();
         }
-        // Fallback: walk upward from current working dir and try to locate the datos folder under 03-src/FarmaciaSolidJava
+
         Path cwd = Path.of("").toAbsolutePath();
         for (Path p = cwd; p != null; p = p.getParent()) {
             Path candidato = p.resolve("03-src").resolve("FarmaciaSolidJava").resolve("datos");
