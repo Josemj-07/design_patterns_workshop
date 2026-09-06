@@ -3,15 +3,16 @@ package farmacia.aplicacion.fachada;
 import farmacia.aplicacion.casosdeuso.AcumularPuntos;
 import farmacia.aplicacion.casosdeuso.AutenticarUsuario;
 import farmacia.aplicacion.casosdeuso.BuscarCliente;
-import farmacia.aplicacion.casosdeuso.BuscarProducto;
+import farmacia.aplicacion.casosdeuso.BuscarPagable;
 import farmacia.aplicacion.casosdeuso.CargarClientes;
-import farmacia.aplicacion.casosdeuso.CargarProductos;
+import farmacia.aplicacion.casosdeuso.CargarPagables;
 import farmacia.aplicacion.casosdeuso.CargarUsuarios;
 import farmacia.aplicacion.casosdeuso.ListarClientes;
 import farmacia.aplicacion.casosdeuso.ListarProductos;
 import farmacia.aplicacion.casosdeuso.RegistrarVenta;
 import farmacia.aplicacion.casosdeuso.VerificarAlertas;
 import farmacia.dominio.catalogo.Producto;
+import farmacia.dominio.interfaces.IPagable;
 import farmacia.dominio.personas.Cliente;
 
 import java.util.List;
@@ -26,27 +27,27 @@ import java.util.Optional;
  */
 public class AplicacionFarmacia {
 
-    private final CargarProductos casoUsoCargarProductos;
+    private final CargarPagables casoUsoCargarProductos;
     private final CargarClientes casoUsoCargarClientes;
     private final CargarUsuarios casoUsoCargarUsuarios;
     private final AutenticarUsuario casoUsoAutenticarUsuario;
     private final VerificarAlertas casoUsoVerificarAlertas;
     private final ListarProductos casoUsoListarProductos;
     private final ListarClientes casoUsoListarClientes;
-    private final BuscarProducto casoUsoBuscarProducto;
+    private final BuscarPagable casoUsoBuscarProducto;
     private final BuscarCliente casoUsoBuscarCliente;
     private final RegistrarVenta casoUsoRegistrarVenta;
     private final AcumularPuntos casoUsoAcumularPuntos;
 
     public AplicacionFarmacia(
-            CargarProductos casoUsoCargarProductos,
+            CargarPagables casoUsoCargarProductos,
             CargarClientes casoUsoCargarClientes,
             CargarUsuarios casoUsoCargarUsuarios,
             AutenticarUsuario casoUsoAutenticarUsuario,
             VerificarAlertas casoUsoVerificarAlertas,
             ListarProductos casoUsoListarProductos,
             ListarClientes casoUsoListarClientes,
-            BuscarProducto casoUsoBuscarProducto,
+            BuscarPagable casoUsoBuscarProducto,
             BuscarCliente casoUsoBuscarCliente,
             RegistrarVenta casoUsoRegistrarVenta,
             AcumularPuntos casoUsoAcumularPuntos) {
@@ -92,7 +93,12 @@ public class AplicacionFarmacia {
         return casoUsoListarClientes.ejecutar();
     }
 
-    public Optional<Producto> buscarProducto(String nombreParcialProducto) {
+    /**
+     * Resuelve por nombre parcial cualquier pagable del catalogo (producto o
+     * servicio). Lo usa tanto "Buscar producto" como el precheck de
+     * "Registrar venta", de modo que un servicio tambien es vendible.
+     */
+    public Optional<IPagable> buscarProducto(String nombreParcialProducto) {
         return casoUsoBuscarProducto.ejecutar(nombreParcialProducto);
     }
 

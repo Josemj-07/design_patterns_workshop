@@ -1,10 +1,13 @@
 package farmacia.dominio.catalogo;
 
+import farmacia.dominio.interfaces.IPagable;
+import farmacia.dominio.interfaces.IPagableVisitor;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
-public abstract class Producto {
+public abstract class Producto implements IPagable {
     private final String nombre;
     private final BigDecimal precio;
     private int stock;
@@ -38,12 +41,19 @@ public abstract class Producto {
         this.fechaVencimiento = fechaVencimiento;
     }
 
+    @Override
     public String getNombre() {
         return nombre;
     }
 
+    @Override
     public BigDecimal getPrecio() {
         return precio;
+    }
+
+    @Override
+    public <R> R aceptar(IPagableVisitor<R> visitante) {
+        return visitante.visitarProducto(this);
     }
 
     public int getStock() {

@@ -3,31 +3,30 @@ package farmacia.aplicacion.construccion;
 import farmacia.aplicacion.casosdeuso.AcumularPuntos;
 import farmacia.aplicacion.casosdeuso.AutenticarUsuario;
 import farmacia.aplicacion.casosdeuso.BuscarCliente;
-import farmacia.aplicacion.casosdeuso.BuscarProducto;
+import farmacia.aplicacion.casosdeuso.BuscarPagable;
 import farmacia.aplicacion.casosdeuso.CargarClientes;
-import farmacia.aplicacion.casosdeuso.CargarProductos;
+import farmacia.aplicacion.casosdeuso.CargarPagables;
 import farmacia.aplicacion.casosdeuso.CargarUsuarios;
 import farmacia.aplicacion.casosdeuso.ListarClientes;
 import farmacia.aplicacion.casosdeuso.ListarProductos;
 import farmacia.aplicacion.casosdeuso.RegistrarVenta;
 import farmacia.aplicacion.casosdeuso.VerificarAlertas;
+import farmacia.aplicacion.fabricas.RegistradorFabricasIPagable;
 import farmacia.aplicacion.fachada.AplicacionFarmacia;
-import farmacia.aplicacion.puertos.IAutenticacion;
-import farmacia.aplicacion.puertos.IFabricaProducto;
-import farmacia.aplicacion.puertos.IFuenteTexto;
-import farmacia.aplicacion.puertos.INotificador;
-import farmacia.aplicacion.puertos.IRepositorioCliente;
-import farmacia.aplicacion.puertos.IRepositorioProducto;
-import farmacia.aplicacion.puertos.IRepositorioUsuario;
-import farmacia.aplicacion.puertos.IRepositorioVenta;
+import farmacia.dominio.puertos.IAutenticacion;
+import farmacia.dominio.puertos.IFabricaPagable;
+import farmacia.dominio.puertos.IFuenteTexto;
+import farmacia.dominio.puertos.IRepositorioCliente;
+import farmacia.dominio.puertos.IRepositorioPagable;
+import farmacia.dominio.puertos.IRepositorioUsuario;
+import farmacia.dominio.puertos.IRepositorioVenta;
 import farmacia.infraestructura.auth.AutenticacionPorCredenciales;
-import farmacia.infraestructura.fabricas.FabricaProducto;
 import farmacia.infraestructura.notificaciones.NotificadorConsola;
-import farmacia.infraestructura.persistencia.FuenteTextoArchivo;
-import farmacia.infraestructura.persistencia.RepositorioClienteMemoria;
-import farmacia.infraestructura.persistencia.RepositorioProductoMemoria;
-import farmacia.infraestructura.persistencia.RepositorioUsuarioMemoria;
-import farmacia.infraestructura.persistencia.RepositorioVentaMemoria;
+import farmacia.infraestructura.persistencia.adaptadores.AdaptadorFuenteTextoArchivo;
+import farmacia.infraestructura.persistencia.adaptadores.AdaptadorRepositorioClienteMemoria;
+import farmacia.infraestructura.persistencia.adaptadores.AdaptadorRepositorioIPagableMemoria;
+import farmacia.infraestructura.persistencia.adaptadores.AdaptadorRepositorioUsuarioMemoria;
+import farmacia.infraestructura.persistencia.adaptadores.AdaptadorRepositorioVentaMemoria;
 
 /**
  * ConcreteBuilder: unico lugar del sistema que conoce las implementaciones
@@ -38,10 +37,10 @@ import farmacia.infraestructura.persistencia.RepositorioVentaMemoria;
 public class AplicacionFarmaciaBuilder implements IAplicacionFarmaciaBuilder {
 
     private IFuenteTexto fuenteTexto;
-    private IFabricaProducto fabricaProducto;
-    private INotificador notificador;
+    private IFabricaPagable fabricaProducto;
+    private NotificadorConsola notificador;
 
-    private IRepositorioProducto repositorioProducto;
+    private IRepositorioPagable repositorioProducto;
     private IRepositorioCliente repositorioCliente;
     private IRepositorioUsuario repositorioUsuario;
     private IRepositorioVenta repositorioVenta;
@@ -64,31 +63,31 @@ public class AplicacionFarmaciaBuilder implements IAplicacionFarmaciaBuilder {
 
     @Override
     public void construirInfraestructura() {
-        fuenteTexto = new FuenteTextoArchivo();
-        fabricaProducto = new FabricaProducto();
+        fuenteTexto = new AdaptadorFuenteTextoArchivo();
+        fabricaProducto = new RegistradorFabricasIPagable();
         notificador = new NotificadorConsola();
     }
 
     @Override
     public void construirRepositorios() {
-        repositorioProducto = new RepositorioProductoMemoria();
-        repositorioCliente = new RepositorioClienteMemoria();
-        repositorioUsuario = new RepositorioUsuarioMemoria();
-        repositorioVenta = new RepositorioVentaMemoria();
+        repositorioProducto = new AdaptadorRepositorioIPagableMemoria();
+        repositorioCliente = new AdaptadorRepositorioClienteMemoria();
+        repositorioUsuario = new AdaptadorRepositorioUsuarioMemoria();
+        repositorioVenta = new AdaptadorRepositorioVentaMemoria();
         autenticacion = new AutenticacionPorCredenciales(repositorioUsuario);
     }
 
     @Override
     public void construirCasosDeUso() {
         resultado = new AplicacionFarmacia(
-                new CargarProductos(repositorioProducto, fabricaProducto, fuenteTexto),
+                new CargarPagables(repositorioProducto, fabricaProducto, fuenteTexto),
                 new CargarClientes(repositorioCliente, fuenteTexto),
                 new CargarUsuarios(repositorioUsuario, fuenteTexto),
                 new AutenticarUsuario(autenticacion),
                 new VerificarAlertas(repositorioProducto, notificador),
                 new ListarProductos(repositorioProducto),
                 new ListarClientes(repositorioCliente),
-                new BuscarProducto(repositorioProducto),
+                new BuscarPagable(repositorioProducto),
                 new BuscarCliente(repositorioCliente),
                 new RegistrarVenta(repositorioProducto, repositorioVenta, notificador),
                 new AcumularPuntos(repositorioCliente, notificador));

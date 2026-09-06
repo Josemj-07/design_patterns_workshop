@@ -1,40 +1,42 @@
 package farmacia.aplicacion.casosdeuso;
 
-import farmacia.aplicacion.puertos.INotificador;
-import farmacia.aplicacion.puertos.IRepositorioProducto;
-import farmacia.aplicacion.puertos.IRepositorioVenta;
-import farmacia.dominio.catalogo.Producto;
+import farmacia.aplicacion.visitantes.VisitanteAfectacionVenta;
+import farmacia.dominio.interfaces.IPagable;
 import farmacia.dominio.inventario.Venta;
+import farmacia.dominio.puertos.INotificadorVentas;
+import farmacia.dominio.puertos.IRepositorioPagable;
+import farmacia.dominio.puertos.IRepositorioVenta;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 public class RegistrarVenta {
-    private final IRepositorioProducto repositorioProducto;
+    private final IRepositorioPagable repositorioProducto;
     private final IRepositorioVenta repositorioVenta;
-    private final INotificador notificador;
+    private final INotificadorVentas notificador;
 
     public RegistrarVenta(
-            IRepositorioProducto repositorioProducto,
+            IRepositorioPagable repositorioProducto,
             IRepositorioVenta repositorioVenta,
-            INotificador notificador) {
+            INotificadorVentas notificador) {
         this.repositorioProducto = repositorioProducto;
         this.repositorioVenta = repositorioVenta;
         this.notificador = notificador;
     }
 
     /**
-     * @return true si la venta se registro; false si no se encontro el producto.
+     * @return true si la venta se registro; false si no se encontro el pagable.
      */
     public boolean ejecutar(String nombreParcialProducto, int cantidadVendida) {
-        Optional<Producto> productoEncontrado =
+        Optional<IPagable> productoEncontrado =
                 repositorioProducto.buscarPorNombreParcial(nombreParcialProducto);
         if (productoEncontrado.isEmpty()) {
             return false;
         }
-        Producto productoAVender = productoEncontrado.get();
-        productoAVender.descontarStock(cantidadVendida);
-        Venta venta = new Venta(LocalDateTime.now(), cantidadVendida, productoAVender);
+        IPagable pagableAVender = productoEncontrado.get();
+        // Visitor: Producto descuenta stock (semantica AS-IS); Servicio no hace nada.
+        pagableAVender.aceptar(new VisitanteAfectacionVenta(cantidadVendida));
+        Venta venta = new Venta(LocalDateTime.now(), cantidadVendida, pagableAVender);
         repositorioVenta.registrar(venta);
         notificador.ventaRegistrada();
         return true;

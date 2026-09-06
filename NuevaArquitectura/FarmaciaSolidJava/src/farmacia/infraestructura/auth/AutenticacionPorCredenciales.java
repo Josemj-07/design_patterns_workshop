@@ -1,7 +1,7 @@
 package farmacia.infraestructura.auth;
 
-import farmacia.aplicacion.puertos.IAutenticacion;
-import farmacia.aplicacion.puertos.IRepositorioUsuario;
+import farmacia.dominio.puertos.IAutenticacion;
+import farmacia.dominio.puertos.IRepositorioUsuario;
 
 /**
  * Valida credenciales buscando solo el usuario indicado (no carga toda la lista).

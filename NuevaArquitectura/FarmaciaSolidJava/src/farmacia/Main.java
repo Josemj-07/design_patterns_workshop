@@ -24,7 +24,7 @@ public class Main {
 
         MenuFarmacia menuFarmacia = new MenuFarmacia(
                 aplicacionFarmacia,
-                carpetaDatos.resolve("productos.txt").toString(),
+                carpetaDatos.resolve("pagables.txt").toString(),
                 carpetaDatos.resolve("clientes.txt").toString(),
                 carpetaDatos.resolve("usuarios.txt").toString());
 

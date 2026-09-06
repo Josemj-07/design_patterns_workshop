@@ -1,16 +1,16 @@
 package farmacia.aplicacion.casosdeuso;
 
-import farmacia.aplicacion.puertos.INotificador;
-import farmacia.aplicacion.puertos.IRepositorioCliente;
 import farmacia.dominio.personas.Cliente;
+import farmacia.dominio.puertos.INotificadorFidelizacion;
+import farmacia.dominio.puertos.IRepositorioCliente;
 
 import java.util.Optional;
 
 public class AcumularPuntos {
     private final IRepositorioCliente repositorioCliente;
-    private final INotificador notificador;
+    private final INotificadorFidelizacion notificador;
 
-    public AcumularPuntos(IRepositorioCliente repositorioCliente, INotificador notificador) {
+    public AcumularPuntos(IRepositorioCliente repositorioCliente, INotificadorFidelizacion notificador) {
         this.repositorioCliente = repositorioCliente;
         this.notificador = notificador;
     }

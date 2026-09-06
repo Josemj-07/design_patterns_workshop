@@ -1,12 +1,15 @@
 package farmacia.infraestructura.notificaciones;
 
-import farmacia.aplicacion.puertos.INotificador;
+import farmacia.dominio.puertos.INotificadorFidelizacion;
+import farmacia.dominio.puertos.INotificadorInventario;
+import farmacia.dominio.puertos.INotificadorVentas;
 
 /**
  * Adaptador de consola. Unico lugar con colores/ANSI (bajo nivel).
  * Mensajes identicos al AS-IS en C#.
  */
-public class NotificadorConsola implements INotificador {
+public class NotificadorConsola
+        implements INotificadorInventario, INotificadorFidelizacion, INotificadorVentas {
     private static final String COLOR_RESET = "\u001B[0m";
     private static final String COLOR_ROJO = "\u001B[31m";
     private static final String COLOR_AMARILLO = "\u001B[33m";

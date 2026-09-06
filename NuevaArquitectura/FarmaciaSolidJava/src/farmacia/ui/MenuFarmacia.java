@@ -1,5 +1,6 @@
 package farmacia.ui;
 
+import farmacia.dominio.interfaces.IPagable;
 import farmacia.aplicacion.fachada.AplicacionFarmacia;
 import farmacia.dominio.catalogo.Producto;
 import farmacia.dominio.personas.Cliente;
@@ -129,13 +130,17 @@ public class MenuFarmacia {
     private void buscarProducto(Scanner entradaConsola) {
         System.out.print("\nIngrese nombre producto: ");
         String nombreProductoBuscado = entradaConsola.nextLine();
-        Optional<Producto> productoEncontrado =
+        Optional<IPagable> productoEncontrado =
                 aplicacionFarmacia.buscarProducto(nombreProductoBuscado);
         if (productoEncontrado.isPresent()) {
-            Producto producto = productoEncontrado.get();
-            System.out.println("\nProducto: " + producto.getNombre());
-            System.out.println("Precio: " + producto.getPrecio());
-            System.out.println("Stock: " + producto.getStock());
+            IPagable pagable= productoEncontrado.get();
+            System.out.println("\nProducto: " + pagable.getNombre());
+            System.out.println("Precio: " + pagable.getPrecio());
+
+            if(pagable instanceof Producto) {
+                Producto p = (Producto) pagable;
+                System.out.println("Stock: " +p.getStock());
+            }
         } else {
             System.out.println("\nProducto no encontrado");
         }
@@ -145,7 +150,7 @@ public class MenuFarmacia {
         System.out.print("\nNombre producto: ");
         String nombreProductoVenta = entradaConsola.nextLine();
 
-        Optional<Producto> productoExistente =
+        Optional<IPagable> productoExistente =
                 aplicacionFarmacia.buscarProducto(nombreProductoVenta);
         if (productoExistente.isEmpty()) {
             System.out.println("\nProducto no encontrado");

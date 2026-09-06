@@ -1,6 +1,6 @@
 package farmacia.aplicacion.casosdeuso;
 
-import farmacia.aplicacion.puertos.IAutenticacion;
+import farmacia.dominio.puertos.IAutenticacion;
 
 public class AutenticarUsuario {
     private final IAutenticacion autenticacion;
