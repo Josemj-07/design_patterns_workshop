@@ -1,9 +1,0 @@
-# Compilacion Java (javac -d out)
-out/
-
-# IDE / OS
-.idea/
-*.iml
-.vscode/
-.DS_Store
-Thumbs.db
