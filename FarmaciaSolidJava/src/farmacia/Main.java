@@ -6,6 +6,7 @@ import farmacia.aplicacion.construccion.IAplicacionFarmaciaBuilder;
 import farmacia.aplicacion.fachada.AplicacionFarmacia;
 import farmacia.ui.MenuFarmacia;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
@@ -32,26 +33,26 @@ public class Main {
     }
 
     private static Path resolverCarpetaDatos() {
-        Path carpetaDatosActual = Path.of("datos");
-        if (carpetaDatosActual.toFile().exists()) {
-            return carpetaDatosActual.toAbsolutePath();
-        }
-        Path carpetaDatosDesdeRaizSolucion = Path.of("FarmaciaSolidJava", "datos");
-        if (carpetaDatosDesdeRaizSolucion.toFile().exists()) {
-            return carpetaDatosDesdeRaizSolucion.toAbsolutePath();
-        }
-        Path carpetaDatosDesde03Src = Path.of("03-src", "FarmaciaSolidJava", "datos");
-        if (carpetaDatosDesde03Src.toFile().exists()) {
-            return carpetaDatosDesde03Src.toAbsolutePath();
-        }
+        String[][] candidatosRelativos = new String[][]{
+                {"datos"},
+                {"NuevaArquitectura", "FarmaciaSolidJava", "datos"},
+                {"FarmaciaSolidJava", "datos"},
+                {"03-src", "FarmaciaSolidJava", "datos"}
+        };
 
         Path cwd = Path.of("").toAbsolutePath();
         for (Path p = cwd; p != null; p = p.getParent()) {
-            Path candidato = p.resolve("03-src").resolve("FarmaciaSolidJava").resolve("datos");
-            if (candidato.toFile().exists()) {
-                return candidato;
+            for (String[] candidatoRelativo : candidatosRelativos) {
+                Path candidato = p;
+                for (String parte : candidatoRelativo) {
+                    candidato = candidato.resolve(parte);
+                }
+                if (Files.isDirectory(candidato)) {
+                    return candidato.toAbsolutePath();
+                }
             }
         }
-        return carpetaDatosActual.toAbsolutePath();
+
+        return cwd.resolve("NuevaArquitectura").resolve("FarmaciaSolidJava").resolve("datos").toAbsolutePath();
     }
 }
